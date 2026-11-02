@@ -98,7 +98,7 @@ function loginHtml(message = "", returnTo = "/") {
 <meta name="theme-color" content="#66256f">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/favicon.ico">
-<title>Private Website</title>
+<title>May in Mendocino</title>
 <style>
   *{box-sizing:border-box}
   body{margin:0;min-height:100vh;min-height:100svh;display:grid;place-items:center;padding:22px;
@@ -131,7 +131,7 @@ function loginHtml(message = "", returnTo = "/") {
 </head>
 <body>
 <main class="card">
-  <h1>Private Website</h1>
+  <h1>May in Mendocino</h1>
   <p>Enter the password to continue</p>
   ${safeMessage ? `<div class="message" role="alert">${safeMessage}</div>` : ""}
   <form method="post" action="/login">
@@ -142,7 +142,7 @@ function loginHtml(message = "", returnTo = "/") {
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
     </div>
-    <button class="submit" type="submit">Unlock&nbsp; →</button>
+    <button class="submit" type="submit">Enter&nbsp; →</button>
   </form>
 </main>
 <script>
