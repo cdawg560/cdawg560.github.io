@@ -1,5 +1,5 @@
 const COOKIE_NAME = "mendocino_access";
-const SESSION_SECONDS = 60 * 60 * 24 * 7;
+const SESSION_SECONDS = 60 * 60 * 24 * 1;
 
 function base64url(bytes) {
   let binary = "";
