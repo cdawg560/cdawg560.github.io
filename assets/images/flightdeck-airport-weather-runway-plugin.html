@@ -1,0 +1,416 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FlightDeck | Flight Planning</title><style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#17263d;background:#f2f6fb}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#edf4fb 0%,#f7f9fc 48%,#edf6f5 100%);color:#17263d}
+header{padding:17px max(24px,calc((100vw - 1380px)/2));display:flex;justify-content:space-between;align-items:center;background:#102744;color:#fff;position:sticky;top:0;z-index:5;box-shadow:0 5px 22px #10274425}
+.brand{font-size:23px;font-weight:850;letter-spacing:-.8px}.brand>span:first-child{color:#39d6c1}.tag{color:#a9bfd7;font-size:11px;letter-spacing:1.3px;margin-left:8px}
+.pill{font-size:11px;color:#bafff2;border:1px solid #3b9c94;background:#174e5a;padding:7px 11px;border-radius:30px;font-weight:700}
+main{max-width:1380px;margin:auto;padding:30px 24px 70px}
+.hero{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:25px;padding:30px 32px;border-radius:22px;background:linear-gradient(115deg,#12395d,#176b79 65%,#21a18c);color:#fff;box-shadow:0 16px 35px #154d6c25;position:relative;overflow:hidden}
+.hero:after{content:"✈";position:absolute;right:27%;top:-42px;font-size:170px;color:#ffffff10;transform:rotate(-12deg);pointer-events:none}
+.hero>div,.hero>button{position:relative;z-index:1}
+h1{font-size:clamp(29px,4vw,43px);letter-spacing:-1.5px;margin:0 0 8px;color:#fff}
+h2{font-size:17px;margin:0 0 18px;letter-spacing:-.3px;color:#1b3553}
+p{color:#64758b;margin:0;line-height:1.55}.hero p{color:#d1e6ee}
+.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8ff4df;font-weight:800;margin-bottom:10px}
+.layout{display:grid;grid-template-columns:1.05fr .95fr;gap:18px;align-items:start}
+.panel{background:#fff;border:1px solid #dce6f0;border-radius:17px;padding:23px;box-shadow:0 8px 24px #24496b0b}
+.wide{grid-column:1/-1}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:15px}
+.fields.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+label{display:block;font-size:12px;color:#52677f;margin-bottom:7px;font-weight:700}
+input,select{width:100%;background:#f7fafd;color:#17263d;border:1px solid #d2deea;border-radius:9px;padding:12px 11px;font:inherit;outline:none;transition:.18s}
+input:focus,select:focus{border-color:#159c98;box-shadow:0 0 0 3px #159c9818;background:#fff}
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:19px}
+.metric{background:#fff;border:1px solid #dce6f0;padding:18px;border-radius:15px;box-shadow:0 8px 22px #24496b0b;position:relative;overflow:hidden}
+.metric:before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:#18a99b}
+.metric:nth-child(2):before{background:#3985db}.metric:nth-child(3):before{background:#e6a33b}.metric:nth-child(4):before{background:#8b70d8}
+.metric b{display:block;font-size:27px;margin-top:8px;letter-spacing:-1px;color:#183655}
+.metric small{color:#687d93;font-size:12px;font-weight:700}
+.metric .unit{font-size:12px;color:#8191a4;font-weight:500}
+.accent{color:#078c7d}.warning{color:#b87917}.danger{color:#d94b4b}
+.result{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #e8eef4;padding:12px 0;font-size:13px}
+.result:last-child{border:0}.result span{color:#64788e}.result strong{font-variant-numeric:tabular-nums;color:#193958}
+.notice{background:#eaf8f4;border:1px solid #bfe8dc;border-radius:11px;padding:13px 15px;color:#23675d;font-size:12px;line-height:1.55;margin-top:15px}
+.notice.alert{background:#fff2ed;border-color:#f3c5b6;color:#a44935}
+.speeds{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.speed{border:1px solid #dce7f1;background:linear-gradient(180deg,#f8fbff,#eef5fb);border-radius:12px;text-align:center;padding:16px 5px}
+.speed span{font-size:12px;color:#61778e;font-weight:700}.speed b{display:block;font-size:24px;color:#176c83;margin:8px 0 0}.speed small{font-size:10px;color:#8b9db0}
+.button{border:0;border-radius:10px;padding:13px 17px;background:#ffbd59;color:#24364b;cursor:pointer;font-weight:800;box-shadow:0 5px 14px #10274420;transition:.18s}
+.button:hover{background:#ffd080;transform:translateY(-1px)}
+.muted{font-size:12px;color:#8292a5;margin-top:12px}
+.split{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.foot{margin-top:22px;color:#78899c;font-size:12px;line-height:1.6;padding:0 5px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.speeds{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:540px){header{padding:15px 16px}.brand{font-size:19px}.tag{display:none}main{padding:20px 12px 50px}.panel{padding:17px}.fields.three{grid-template-columns:repeat(2,minmax(0,1fr))}.metrics{gap:8px}.metric{padding:14px}.metric b{font-size:23px}.hero{align-items:start;flex-direction:column;padding:24px 20px}.hero:after{right:-5px;top:25px;font-size:110px}.speeds{gap:7px}.speed{padding:13px 3px}}
+@media print{body{background:#fff}.hero{background:#12395d!important;print-color-adjust:exact}.button{display:none}.panel,.metric{box-shadow:none;break-inside:avoid}}
+</style>
+<style>
+/* Printable flight-school worksheet appearance */
+:root{font-family:Arial,Helvetica,sans-serif;color:#111;background:#e9edf2}
+body{background:#e9edf2;color:#111;font-size:13px}
+header{position:static;background:#fff;color:#111;box-shadow:none;border:2px solid #174f83;margin:18px auto 0;max-width:1100px;padding:10px 16px}
+.brand{color:#174f83;font-size:19px;letter-spacing:.2px}.brand>span:first-child{color:#174f83}.tag{color:#333}
+.pill{background:#fff;color:#174f83;border:1px solid #174f83;border-radius:0}
+main{max-width:1100px;background:#fff;margin:0 auto 24px;padding:14px 18px 28px;border:2px solid #174f83;border-top:0}
+.hero{background:#fff;color:#111;box-shadow:none;border-radius:0;border-bottom:2px solid #174f83;padding:4px 0 13px;margin-bottom:12px}
+.hero:after{display:none}
+h1{font-size:21px;color:#111;letter-spacing:0;text-align:center;text-transform:uppercase;margin:0 0 4px}
+.hero p{color:#333;text-align:center;font-size:12px}
+.eyebrow{display:none}
+.button{background:#174f83;color:white;border-radius:2px;box-shadow:none}
+.metrics{display:none}
+.layout{grid-template-columns:1.05fr .95fr;gap:0;border:1.5px solid #111}
+.panel{border:1px solid #111;border-radius:0;box-shadow:none;padding:10px 12px;background:#fff}
+.layout>.panel{border-width:0 1px 1px 0}
+.layout>.panel:nth-child(2n){border-right:0}
+.layout>.panel.wide{border-right:0}
+h2{font-size:13px;text-transform:uppercase;color:#111;letter-spacing:.25px;margin:0 0 9px;border-bottom:1px solid #111;padding-bottom:6px}
+.fields{gap:8px 10px}
+.fields.three{grid-template-columns:repeat(2,minmax(0,1fr))}
+label{font-size:10px;color:#111;font-weight:700;margin-bottom:3px}
+input,select{padding:6px 7px;border:1px solid #777;border-radius:0;background:#fff;font-size:12px;color:#111}
+input:focus,select:focus{border-color:#174f83;box-shadow:0 0 0 1px #174f83;background:#fff}
+.result{padding:6px 0;font-size:11px;border-bottom:1px solid #bbb}
+.result span{color:#111}.result strong{color:#111}
+.notice{border-radius:0;background:#eef5fc;border:1px solid #8caac6;color:#173d62;padding:8px;font-size:10px}
+.notice.alert{background:#fff1ed;border-color:#bd4b36;color:#8d281c}
+.speed{border:1px solid #111;border-radius:0;background:#fff;padding:8px 3px}
+.speed span{color:#111;font-size:10px}.speed b{color:#111;font-size:17px;margin:4px 0}.speed small{font-size:9px}
+.speeds{grid-template-columns:repeat(10,1fr);gap:0}
+.muted,.foot{font-size:10px;color:#333}
+.split{align-items:center}
+#speedGrid{border:1px solid #111}
+#weatherRows,#windRows{border-top:1px solid #aaa}.weather-panel,.winds-panel{min-width:0}
+#loadAlert,#fuelAlert{margin-top:8px}
+#fratPanel{background:#f5f8fb}
+.cg-sheet{grid-column:1/-1;border:1px solid #111;padding:10px 12px;background:#fff}
+.cg-sheet h2{margin-bottom:8px}
+.cg-plot{width:100%;height:auto;display:block;max-height:360px}.cg-legend{font-size:11px;font-weight:800;text-align:center;padding:4px}
+.form-meta{display:grid;grid-template-columns:1.2fr 1fr 1fr 1fr;border:1px solid #111;margin:8px 0 12px}
+.form-meta div{padding:8px;border-right:1px solid #111;min-height:34px;font-size:10px;font-weight:bold}
+.form-meta div:last-child{border:0}
+@media(max-width:760px){header{margin:8px 8px 0}main{margin:0 8px 12px;padding:10px}.layout{grid-template-columns:1fr}.layout>.panel{border-right:0!important}.speeds{grid-template-columns:repeat(5,1fr)}.form-meta{grid-template-columns:repeat(2,1fr)}.form-meta div:nth-child(2){border-right:0}.form-meta div:nth-child(-n+2){border-bottom:1px solid #111}}
+@media print{body{background:#fff}header,main{max-width:none;margin:0;border:1px solid #111}header{border-bottom:0}.hero{break-inside:avoid}.button{display:none}.panel{break-inside:avoid}.foot{font-size:8px}}
+</style>
+<style>
+.sheet-main{padding:0!important;border:0!important}
+.sheet-top{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:10px;align-items:end;padding:12px 10px}
+.sheet-top input,.sheet-top select{width:100%;height:31px}
+.sheet-intro{text-align:right;font-size:11px;font-weight:bold;color:#9c2b2b}
+.sheet-columns{display:grid;grid-template-columns:minmax(0, 2.25fr) minmax(235px,1fr);align-items:stretch}
+.wb-table,.fuel-sheet table{border-collapse:collapse;width:100%;table-layout:fixed}
+.wb-table th,.wb-table td,.fuel-sheet th,.fuel-sheet td{border:2px solid #111;padding:5px 5px;text-align:center;vertical-align:middle;height:39px}
+.wb-table thead th{font-size:13px;height:39px}.wb-table .blank-head{border-top:0;border-left:0}
+.wb-table tbody th{font-size:10px;font-weight:800;line-height:1.2}
+.wb-table tbody th small{display:block;font-size:8px;font-weight:normal;margin-top:3px}
+.wb-table td{font-size:12px;font-variant-numeric:tabular-nums}
+.wb-table input,.fuel-sheet input{border:0;border-radius:0;background:transparent;text-align:center;width:100%;padding:3px 0;font-size:12px;box-shadow:none}
+.wb-table input:focus,.fuel-sheet input:focus{outline:2px solid #2178ae;outline-offset:-2px}
+.wb-table .two-inputs{display:flex;gap:3px}.wb-table .two-inputs input{width:50%;min-width:0}
+.wb-table td small{font-size:8px;color:#555}
+.subtotal{background:#eef0f3;font-weight:800}
+.blue-row{background:#91d8f8!important}
+.red{color:#c52424!important;font-weight:800!important}
+.fuel-sheet{border:2px solid #111;border-left:0;display:flex;flex-direction:column}
+.fuel-title{text-align:center;font-size:13px;font-weight:800;padding:13px 3px 11px}
+.fuel-title small{display:block;font-size:9px;font-weight:normal;font-style:italic;margin-top:5px}
+.fuel-sheet table th{font-size:10px;font-weight:500;text-align:left;padding-left:10px}
+.fuel-sheet table td{width:34%;font-size:12px}
+.fuel-sheet table thead th{font-size:10px;text-align:center;height:26px;border-top:0}
+.fuel-sheet table thead th:first-child{border-left:0}
+.fuel-sheet table tbody th:first-child{border-left:0}
+.fuel-sheet table td:last-child{border-right:0}
+.fuel-endurance{margin-top:auto;border-top:2px solid #111;padding:12px 8px;font-size:13px;font-weight:800}
+.fuel-endurance strong{float:right}
+.sheet-bottom{text-align:center;border:2px solid #111;border-top:0;font-size:9px;padding:6px 3px;line-height:1.6}
+.sheet-hidden{display:none}
+.sheet-alerts{padding:10px}
+@media(max-width:760px){.sheet-columns{grid-template-columns:1fr}.fuel-sheet{border-left:2px solid #111;border-top:0}.sheet-top{grid-template-columns:1fr 1fr}.sheet-intro{grid-column:1/-1}.wb-table th,.wb-table td{padding:3px 2px}.wb-table tbody th{font-size:9px}.wb-table td{font-size:10px}.wb-table input{font-size:10px}}
+@media print{.sheet-alerts{font-size:9px}.sheet-columns{grid-template-columns:2.25fr 1fr!important}.sheet-main{break-inside:avoid}.wb-table th,.wb-table td{height:31px}}
+</style>
+<style>
+/* Editable worksheet fields highlighted in yellow */
+.wb-table input:not([readonly]),
+.fuel-sheet input:not([readonly]),
+.sheet-top input:not([readonly]),
+.sheet-top select,
+.weather-panel input,
+.winds-panel input,
+input:not([type="hidden"]):not([readonly]),
+select {
+  background-color: #fff2a6 !important;
+  border: 1px solid #b89b24 !important;
+  color: #171717;
+}
+.wb-table input:focus,
+.fuel-sheet input:focus,
+.sheet-top input:focus,
+.sheet-top select:focus,
+.weather-panel input:focus,
+.winds-panel input:focus,
+input:focus, select:focus {
+  background-color: #ffeb70 !important;
+  outline: 2px solid #b18b00;
+  outline-offset: -2px;
+  box-shadow: none !important;
+}
+input[readonly] {
+  background-color: #f0f0f0 !important;
+  border-color: #aaa !important;
+}
+</style>
+<style>
+.va-formula{margin:10px 0 4px;padding:9px 11px;background:#fff2a6;border:1px solid #b89b24;font-size:11px;line-height:1.5;color:#171717}
+</style><style>
+.speed-formula-cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.formula-card{background:#fff8cf;border:1px solid #b89b24;padding:10px 12px}
+.formula-heading{font-size:11px;font-weight:800;color:#17263d;text-transform:uppercase;letter-spacing:.3px}
+.formula-art{width:100%;height:auto;display:block;margin:5px 0}
+.formula-card p{font-size:10px;line-height:1.45;color:#39495b;margin:0}
+@media(max-width:760px){.speed-formula-cards{grid-template-columns:1fr}.formula-art{max-height:85px}}
+</style>
+<style>
+#airportWeatherPanel{grid-column:1/-1}
+.airport-lookup{display:flex;align-items:end;gap:10px;flex-wrap:wrap;margin:14px 0}
+.airport-code-field{width:150px}
+.airport-code-field input{font-weight:800;letter-spacing:1.5px;text-transform:uppercase}
+.airport-status{font-size:11px;color:#52677f;padding:10px 0}
+.airport-weather-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+.airport-subpanel{border:1px solid #111;padding:10px;background:#fff;min-width:0}
+.airport-subpanel h3{font-size:12px;text-transform:uppercase;margin:0 0 9px;padding-bottom:6px;border-bottom:1px solid #111;color:#17263d}
+.airport-decoded{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.airport-stat{background:#f5f7fa;border:1px solid #d7dfe8;padding:7px}
+.airport-stat span{display:block;font-size:9px;color:#56677a;text-transform:uppercase;font-weight:700}
+.airport-stat strong{display:block;font-size:15px;color:#152d49;margin-top:3px}
+.raw-report{font-family:ui-monospace,Consolas,monospace;font-size:11px;line-height:1.5;overflow-wrap:anywhere;background:#fff8cf;border:1px solid #b89b24;padding:9px;margin-top:8px;min-height:44px}
+.runway-panel{margin-bottom:12px}
+.runway-results{overflow-x:auto}
+.runway-table{width:100%;border-collapse:collapse;font-size:11px}
+.runway-table th,.runway-table td{border:1px solid #222;padding:7px;text-align:center}
+.runway-table th{background:#eef0f3}
+.runway-table tr.recommended{background:#dff3e8;font-weight:800}
+.runway-table tr.tailwind{background:#fff0e9}
+.runway-badge{display:inline-block;background:#176b50;color:#fff;padding:3px 6px;font-size:9px}
+.airport-links{display:flex;gap:14px;flex-wrap:wrap;margin:8px 0 12px;font-size:11px}
+.airport-links a{color:#145c8e;text-decoration:underline}
+@media(max-width:760px){.airport-weather-grid{grid-template-columns:1fr}.airport-decoded{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style></head><body><header><div class="brand">✈ Flight<span>Deck</span> <span class="tag">/ PLANNING SUITE</span></div><div class="pill">● Local calculator</div></header><main><div class="hero"><div><div class="eyebrow">Preflight workspace</div><h1>Flight Planning Dashboard</h1><p>Weight & balance, fuel, wind components and performance references in one place.</p></div><button class="button" onclick="window.print()">Print flight summary ↗</button></div><div class="form-meta"><div>AIRCRAFT REGISTRATION: <span id="sheetReg">N4791E</span></div><div>DATE: __________________</div><div>PREPARED BY: __________________</div><div>SIGNATURE: __________________</div></div><section class="metrics"><div class="metric"><small>Takeoff weight</small><b id="mTake">—</b><span class="unit">lb</span></div><div class="metric"><small>Takeoff CG</small><b id="mCG">—</b><span class="unit">in aft of datum</span></div><div class="metric"><small>Fuel remaining</small><b id="mFuel">—</b><span class="unit">gal at landing</span></div><div class="metric"><small>Weight margin</small><b id="mMargin">—</b><span class="unit">lb below max gross</span></div></section><div class="layout">
+<section class="panel wide sheet-main">
+<div class="sheet-top"><div class="sheet-aircraft"><label for="plane">AIRCRAFT REGISTRATION</label><select id="plane"></select></div><div><label>MAX GROSS WEIGHT (LB)</label><input id="maxGross" type="number" readonly></div><div class="sheet-intro">In accordance with FAR 91.9 &amp; 91.103</div></div>
+<div class="sheet-columns">
+<table class="wb-table"><colgroup><col style="width:43%"><col style="width:18%"><col style="width:17%"><col style="width:22%"></colgroup>
+<thead><tr><th class="blank-head"></th><th>WEIGHT</th><th>ARM</th><th>MOMENT</th></tr></thead><tbody>
+<tr><th>BASIC EMPTY WEIGHT (BEW)</th><td id="wbEmptyWeight"></td><td id="wbEmptyArm"></td><td id="wbEmptyMoment"></td></tr>
+<tr><th>PILOT &amp; CO-PILOT</th><td class="two-inputs"><input id="pilot" type="number" value="200" min="0" aria-label="Pilot weight"><input id="copilot" type="number" value="0" min="0" aria-label="Copilot weight"></td><td>37.0</td><td id="wbFrontMoment"></td></tr>
+<tr><th>REAR PASSENGER</th><td class="two-inputs"><input id="rear1" type="number" value="0" min="0" aria-label="Rear passenger one"><input id="rear2" type="number" value="0" min="0" aria-label="Rear passenger two"></td><td>73.0</td><td id="wbRearMoment"></td></tr>
+<tr><th>MAIN BAGGAGE</th><td><input id="mainBag" type="number" value="0" min="0"></td><td>95.0</td><td id="wbMainMoment"></td></tr>
+<tr><th>AFT BAGGAGE <small>The max allowed combined weight for baggage areas 1 &amp; 2 is 120 lbs</small></th><td><input id="aftBag" type="number" value="0" min="0"></td><td>123.0</td><td id="wbAftMoment"></td></tr>
+<tr class="subtotal"><th>ZERO FUEL WEIGHT</th><td id="wbDryWeight"></td><td id="wbDryArm"></td><td id="wbDryMoment"></td></tr>
+<tr><th>TOTAL USABLE FUEL <small class="red">1 USG = 6 LBS.</small></th><td><input id="fuel" type="number" value="40" min="0" step=".1" aria-label="Usable fuel gallons"><small>US gal</small></td><td>47.9</td><td id="wbFuelMoment"></td></tr>
+<tr class="subtotal"><th>RAMP WEIGHT <small class="red">Max 2,400 LBS. (verify selected aircraft)</small></th><td id="wbRampWeight"></td><td id="wbRampArm"></td><td id="wbRampMoment"></td></tr>
+<tr><th>MINUS TAXI &amp; RUN-UP FUEL</th><td id="wbTaxiWeight"></td><td>47.9</td><td id="wbTaxiMoment"></td></tr>
+<tr class="subtotal"><th>TAKE-OFF <small class="red">Max per selected aircraft</small></th><td id="wbTakeWeight"></td><td id="wbTakeArm"></td><td id="wbTakeMoment"></td></tr>
+<tr class="blue-row"><th>MINUS TRIP FUEL</th><td id="wbTripWeight"></td><td>47.9</td><td id="wbTripMoment"></td></tr>
+<tr class="subtotal"><th>LANDING <small class="red">Max per selected aircraft</small></th><td id="wbLandWeight"></td><td id="wbLandArm"></td><td id="wbLandMoment"></td></tr>
+</tbody></table>
+<div class="fuel-sheet">
+<div class="fuel-title">FUEL PLANNING <small>FAR 91.151 and FAR 91.167 — verify applicability</small></div>
+<table><thead><tr><th> </th><th>Quantity (US gal)</th></tr></thead><tbody>
+<tr><th>Start/Taxi/Run-Up Fuel</th><td><input id="taxi" type="number" value="1.1" step=".1"></td></tr>
+<tr class="blue-row"><th>Takeoff and climb to initial cruise level</th><td><input id="climb" type="number" value="2.3" step=".1"></td></tr>
+<tr class="blue-row"><th>Enroute (Duration)</th><td><input id="enroute" type="number" value="16" step=".1"></td></tr>
+<tr class="blue-row"><th>Top of Descent to Landing</th><td><input id="descent" type="number" value="1" step=".1"></td></tr>
+<tr><th>Alternate (Duration)</th><td><input id="alternate" type="number" value="0" step=".1"></td></tr>
+<tr><th>Minimum fuel / reserve</th><td><input id="reserve" type="number" value="8" step=".1"></td></tr>
+<tr class="subtotal"><th>Subtotal</th><td id="fuelSubtotal"></td></tr>
+<tr><th>+ Extra Fuel</th><td id="fuelExtra"></td></tr>
+<tr class="subtotal"><th>TOTAL USABLE FUEL</th><td id="fuelTotal"></td></tr>
+</tbody></table>
+<div class="fuel-endurance">Endurance: <strong id="fuelEndurance">—</strong></div>
+</div>
+</div>
+<div class="sheet-bottom">1 USG = 6 LBS. &nbsp; The basic empty weight includes unusable fuel, operating fluids and full oil. <br>NO UNSECURED BAGGAGE ALLOWED WHEN STALLING, PRACTICING RECOVERY FROM UNUSUAL ATTITUDES OR SIMILAR MANEUVERS.</div>
+<div class="sheet-hidden"><input id="extras" type="number" value="0"><div id="weightRows"></div><div id="fuelRows"></div></div>
+<div class="sheet-alerts"><div id="loadAlert" class="notice"></div><div id="fuelAlert" class="notice"></div><div class="notice alert">Calculated CG does not establish loading-envelope compliance. Verify actual aircraft POH/AFM, current W&amp;B records, arms and limitations.</div></div>
+</section>
+<section class="panel weather-panel"><h2>Weather</h2><div class="fields"><div><label>Altimeter setting (inHg)</label><input id="altimeter" type="number" value="29.99" step="0.01"></div><div><label>Field elevation (ft)</label><input id="elevation" type="number" value="33"></div><div><label>Outside temperature (°C)</label><input id="temp" type="number" value="24"></div></div><div id="weatherRows" style="margin-top:15px"></div><p class="muted">Manual weather entry. Pressure and density altitude are estimates.</p></section>
+<section class="panel winds-panel"><h2>Runway Winds</h2><div class="fields"><div><label>Runway heading (°)</label><input id="runway" type="number" value="90"></div><div><label>Wind direction (°)</label><input id="windDir" type="number" value="250"></div><div><label>Wind speed (kt)</label><input id="windSpeed" type="number" value="10" min="0"></div></div><div id="windRows" style="margin-top:15px"></div><p class="muted">Enter runway and wind directions using the same reference: true or magnetic.</p></section><section class="panel wide"><h2>Reference airspeeds <span class="tag">KIAS · source spreadsheet</span></h2><div class="speeds" id="speedGrid"></div><div class="speed-formula-cards">
+<div class="formula-card">
+<div class="formula-heading">Va · Weight-adjusted maneuvering speed</div>
+<svg class="formula-art" viewBox="0 0 560 92" role="img" aria-label="Va equals square root of takeoff weight divided by maximum gross weight, multiplied by 95 knots">
+<text x="12" y="54" font-size="25" font-weight="bold" fill="#17263d">Va =</text>
+<text x="105" y="30" font-size="20" fill="#17263d">√</text>
+<path d="M127 15 H330" stroke="#17263d" stroke-width="2"/>
+<text x="228" y="37" text-anchor="middle" font-size="14" fill="#17263d">Takeoff Weight</text>
+<path d="M153 44 H303" stroke="#17263d" stroke-width="1.5"/>
+<text x="228" y="64" text-anchor="middle" font-size="14" fill="#17263d">Maximum Gross Weight</text>
+<text x="346" y="53" font-size="22" font-weight="bold" fill="#17263d">× 95 kt</text>
+</svg>
+<p>Uses the selected aircraft's takeoff weight and maximum gross weight. The displayed Va updates automatically.</p>
+</div>
+<div class="formula-card">
+<div class="formula-heading">Vref · Reference landing speed</div>
+<svg class="formula-art" viewBox="0 0 560 92" role="img" aria-label="Vref equals 1.3 times Vso, 1.3 times 41 knots equals 53.3 knots, approximately 53 knots">
+<text x="12" y="54" font-size="25" font-weight="bold" fill="#17263d">Vref =</text>
+<text x="125" y="54" font-size="23" font-weight="bold" fill="#17263d">1.3 × Vso</text>
+<text x="292" y="54" font-size="21" fill="#17263d">= 1.3 × 41</text>
+<text x="444" y="54" font-size="21" font-weight="bold" fill="#087c70">= 53 kt</text>
+</svg>
+<p>From your source sheet: Vso = 41 KIAS. Therefore 1.3 × 41 = 53.3 KIAS, rounded to 53 KIAS. The website displays this as the reference value.</p>
+</div>
+</div><p class="muted">Reference values were provided in the source spreadsheet and are not necessarily applicable to every listed registration. Vfe: 110 kt at 10° flaps, 85 kt at 20° flaps, per source. Verify all speeds against the actual aircraft's POH/AFM.</p></section>
+<section class="cg-sheet">
+<h2>Center of Gravity Limits — Reference Chart</h2>
+<svg class="cg-plot" viewBox="0 0 760 350" role="img" aria-label="Reference center of gravity chart">
+<rect x="58" y="12" width="640" height="270" fill="#fff" stroke="#111" stroke-width="1.5"/>
+<line x1="58.0" y1="12" x2="58.0" y2="282" stroke="#777" stroke-width=".6"/><line x1="111.3" y1="12" x2="111.3" y2="282" stroke="#777" stroke-width=".6"/><line x1="164.7" y1="12" x2="164.7" y2="282" stroke="#777" stroke-width=".6"/><line x1="218.0" y1="12" x2="218.0" y2="282" stroke="#777" stroke-width=".6"/><line x1="271.3" y1="12" x2="271.3" y2="282" stroke="#777" stroke-width=".6"/><line x1="324.6" y1="12" x2="324.6" y2="282" stroke="#777" stroke-width=".6"/><line x1="378.0" y1="12" x2="378.0" y2="282" stroke="#777" stroke-width=".6"/><line x1="431.3" y1="12" x2="431.3" y2="282" stroke="#777" stroke-width=".6"/><line x1="484.6" y1="12" x2="484.6" y2="282" stroke="#777" stroke-width=".6"/><line x1="538.0" y1="12" x2="538.0" y2="282" stroke="#777" stroke-width=".6"/><line x1="591.3" y1="12" x2="591.3" y2="282" stroke="#777" stroke-width=".6"/><line x1="644.6" y1="12" x2="644.6" y2="282" stroke="#777" stroke-width=".6"/><line x1="698.0" y1="12" x2="698.0" y2="282" stroke="#777" stroke-width=".6"/><line x1="58" y1="12" x2="698" y2="12" stroke="#777" stroke-width=".6"/><line x1="58" y1="39" x2="698" y2="39" stroke="#777" stroke-width=".6"/><line x1="58" y1="66" x2="698" y2="66" stroke="#777" stroke-width=".6"/><line x1="58" y1="93" x2="698" y2="93" stroke="#777" stroke-width=".6"/><line x1="58" y1="120" x2="698" y2="120" stroke="#777" stroke-width=".6"/><line x1="58" y1="147" x2="698" y2="147" stroke="#777" stroke-width=".6"/><line x1="58" y1="174" x2="698" y2="174" stroke="#777" stroke-width=".6"/><line x1="58" y1="201" x2="698" y2="201" stroke="#777" stroke-width=".6"/><line x1="58" y1="228" x2="698" y2="228" stroke="#777" stroke-width=".6"/><line x1="58" y1="255" x2="698" y2="255" stroke="#777" stroke-width=".6"/><line x1="58" y1="282" x2="698" y2="282" stroke="#777" stroke-width=".6"/>
+<polyline points="111,250 111,158 165,124 270,38 591,38 591,282" fill="none" stroke="#b22b24" stroke-width="3"/>
+<text x="378" y="92" text-anchor="middle" font-size="19" font-weight="bold" fill="#111">CENTER OF GRAVITY LIMITS</text>
+<text x="378" y="313" text-anchor="middle" font-size="12" font-weight="bold">AIRPLANE C.G. LOCATION — INCHES AFT OF DATUM</text>
+<text x="17" y="150" transform="rotate(-90 17 150)" text-anchor="middle" font-size="12" font-weight="bold">LOADED AIRPLANE WEIGHT (LB)</text>
+<text x="58" y="297" font-size="10">34</text><text x="111" y="297" font-size="10">35</text><text x="218" y="297" font-size="10">37</text><text x="325" y="297" font-size="10">39</text><text x="432" y="297" font-size="10">41</text><text x="538" y="297" font-size="10">43</text><text x="645" y="297" font-size="10">45</text>
+<text x="78" y="270" font-size="11" font-weight="bold">UTILITY</text><text x="78" y="283" font-size="11" font-weight="bold">CATEGORY</text>
+<text x="480" y="190" font-size="11" font-weight="bold">NORMAL</text><text x="480" y="203" font-size="11" font-weight="bold">CATEGORY</text>
+<circle id="cgTakePoint" cx="0" cy="0" r="7" fill="#0878d1" stroke="#fff" stroke-width="2"/><text id="cgTakeLabel" x="0" y="0" font-size="11" font-weight="bold" fill="#075b9c">TAKEOFF</text>
+<circle id="cgLandPoint" cx="0" cy="0" r="7" fill="#e05a28" stroke="#fff" stroke-width="2"/><text id="cgLandLabel" x="0" y="0" font-size="11" font-weight="bold" fill="#b63d18">LANDING</text>
+</svg>
+<div class="cg-legend"><span style="color:#0878d1">● TAKEOFF</span> &nbsp; <span style="color:#e05a28">● LANDING</span></div>
+<p class="muted">Reference-style illustration based on the supplied Melbourne Flight Training worksheet. The plotted envelope is not aircraft-specific approval data. Use the current aircraft POH/AFM and approved weight-and-balance records.</p>
+</section>
+<section class="panel wide" id="airportWeatherPanel">
+<div class="split"><h2>Airport Weather & Runway Operations</h2><span class="pill">LIVE LOOKUP</span></div>
+<p class="muted">Enter a four-letter ICAO airport code to retrieve current weather, forecast, and published runway data.</p>
+<div class="airport-lookup">
+  <div class="airport-code-field"><label for="airportIcao">AIRPORT ICAO</label><input id="airportIcao" type="text" value="KMLB" maxlength="4" autocomplete="off" placeholder="e.g. KMCO"></div>
+  <button class="button" id="airportFetchBtn" type="button">Fetch Airport Data</button>
+  <span id="airportStatus" class="airport-status">Ready</span>
+</div>
+<div class="airport-weather-grid">
+  <div class="airport-subpanel"><h3>METAR · Current Observation</h3><div id="metarDecoded" class="airport-decoded"><p>Enter an airport code and fetch data.</p></div><div class="raw-report" id="metarRaw">METAR will appear here.</div></div>
+  <div class="airport-subpanel"><h3>TAF · Terminal Forecast</h3><div id="tafMeta" class="airport-decoded">Forecast not loaded.</div><div class="raw-report" id="tafRaw">TAF will appear here.</div></div>
+</div>
+<div class="airport-subpanel runway-panel"><div class="split"><h3>Runways & Wind Component Comparison</h3><span id="windSource" class="muted">Waiting for METAR wind</span></div><div id="runwayResults" class="runway-results">Runway comparison will appear after lookup.</div></div>
+<div class="airport-links" id="airportLinks"></div>
+<div class="notice alert">Runway recommendation is a wind-only calculation from reported METAR wind and published runway headings. It is not an active-runway report or dispatch recommendation. Confirm ATIS, NOTAMs, runway closures/conditions, traffic, performance, crosswind limits, and ATC instructions. If wind is calm/variable or weather/runway data is missing, no runway is recommended.</div>
+<p class="muted">Weather source: NOAA/NWS aviation observations via Datamask Aviation. Airport/runway reference data: OurAirports community dataset. Data availability, accuracy, and update timing can vary. Use official briefing sources before flight.</p>
+</section></div><p class="foot">Planning aid only — not an approved flight planning or dispatch system. Check current weather, NOTAMs, POH/AFM, supplements, fuel requirements, actual loading stations, CG envelope and aircraft-specific limitations before flight. Data stays in this browser page and is not transmitted to a server.</p></main><script>
+const planes=[{"id": "N1180N", "empty": 1751.2, "arm": 41.76, "moment": 73130.11, "max": 2550.0, "capacity": 53.0}, {"id": "N6124D", "empty": 1475.21, "arm": 39.81, "moment": 58728.11, "max": 2550.0, "capacity": 40.0}, {"id": "N53361", "empty": 1549.81, "arm": 40.49, "moment": 62744.44, "max": 2400.0, "capacity": 50.0}, {"id": "N656MF", "empty": 1544.0, "arm": 40.57, "moment": 62641.0, "max": 2400.0, "capacity": 50.0}, {"id": "N4182T", "empty": 1524.0, "arm": 38.29, "moment": 58348.9, "max": 2550.0, "capacity": 40.0}, {"id": "N9812J", "empty": 1478.42, "arm": 39.31, "moment": 58116.78, "max": 2400.0, "capacity": 50.0}, {"id": "N739GQ", "empty": 1414.0, "arm": 37.97, "moment": 53694.2, "max": 2400.0, "capacity": 40.0}, {"id": "N5090E", "empty": 1456.0, "arm": 39.76, "moment": 57783.6, "max": 2400.0, "capacity": 40.0}, {"id": "N4951G", "empty": 1497.42, "arm": 38.58, "moment": 57774.64, "max": 2300.0, "capacity": 50.0}, {"id": "N711WE", "empty": 1467.7, "arm": 39.13, "moment": 57435.11, "max": 2400.0, "capacity": 40.0}, {"id": "N3429E", "empty": 1468.05, "arm": 39.56, "moment": 58077.21, "max": 2400.0, "capacity": 40.0}, {"id": "N4791E", "empty": 1498.3, "arm": 39.06, "moment": 58525.71, "max": 2400.0, "capacity": 40.0}, {"id": "N739YH", "empty": 1428.8, "arm": 39.1, "moment": 55866.08, "max": 2400.0, "capacity": 40.0}, {"id": "N6370D", "empty": 1442.73, "arm": 40.03, "moment": 57749.63, "max": 2400.0, "capacity": 40.0}, {"id": "N1061X", "empty": 1482.0, "arm": 43.15, "moment": 63948.3, "max": 2400.0, "capacity": 40.0}, {"id": "N2332E", "empty": 1480.45, "arm": 39.14, "moment": 57937.86, "max": 2300.0, "capacity": 50.0}, {"id": "N7266D", "empty": 1445.2, "arm": 37.77, "moment": 54584.9, "max": 2300.0, "capacity": 40.0}, {"id": "N739DB", "empty": 1504.18, "arm": 37.9, "moment": 57008.32, "max": 2400.0, "capacity": 40.0}, {"id": "N739ZU", "empty": 1487.0, "arm": 39.1, "moment": 58142.39, "max": 2400.0, "capacity": 40.0}, {"id": "N739UP", "empty": 1451.8, "arm": 38.79, "moment": 56314.33, "max": 2400.0, "capacity": 40.0}, {"id": "N737NV", "empty": 1460.73, "arm": 39.29, "moment": 57385.04, "max": 2400.0, "capacity": 40.0}, {"id": "N737UL", "empty": 1444.75, "arm": 38.89, "moment": 56182.61, "max": 2300.0, "capacity": 50.0}, {"id": "N1947F", "empty": 1489.0, "arm": 36.8, "moment": 54867.0, "max": 2400.0, "capacity": 40.0}, {"id": "N64617", "empty": 1468.75, "arm": 39.11, "moment": 57441.29, "max": 2400.0, "capacity": 40.0}];const $=id=>document.getElementById(id);const n=id=>Number($(id).value)||0;const f=(x,d=1)=>Number.isFinite(x)?x.toFixed(d):'—';const row=(label,value)=>`<div class="result"><span>${label}</span><strong>${value}</strong></div>`;
+$('plane').innerHTML=planes.map(p=>`<option value="${p.id}">${p.id}</option>`).join('');$('plane').value='N4791E';let previousPlane='';
+function calculate(){const p=planes.find(x=>x.id===$('plane').value)||planes[0];if(previousPlane!==p.id){$('maxGross').value=p.max;$('fuel').value=p.capacity;previousPlane=p.id;}$('sheetReg').textContent=p.id;const emptyMoment=p.moment;const front=n('pilot')+n('copilot');const rear=n('rear1')+n('rear2')+n('extras');const dry=p.empty+front+rear+n('mainBag')+n('aftBag');const dryMoment=emptyMoment+front*37+rear*73+n('mainBag')*95+n('aftBag')*123;const fuel=n('fuel');const ramp=dry+fuel*6,rampMoment=dryMoment+fuel*6*47.9;const taxi=n('taxi');const take=ramp-taxi*6,takeMoment=rampMoment-taxi*6*47.9;const trip=n('climb')+n('enroute')+n('descent')+n('alternate');const land=take-trip*6,landMoment=takeMoment-trip*6*47.9;const sheetSet=(id,val)=>{const el=$(id);if(el)el.textContent=val};
+const sheetRow=(prefix,w,m)=>{sheetSet('wb'+prefix+'Weight',f(w,1));sheetSet('wb'+prefix+'Arm',w>0?f(m/w,2):'—');sheetSet('wb'+prefix+'Moment',f(m,1))};
+sheetRow('Dry',dry,dryMoment);sheetRow('Ramp',ramp,rampMoment);sheetRow('Take',take,takeMoment);sheetRow('Land',land,landMoment);
+sheetSet('wbEmptyWeight',f(p.empty,2));sheetSet('wbEmptyArm',f(p.arm,2));sheetSet('wbEmptyMoment',f(p.moment,1));
+sheetSet('wbFrontMoment',f(front*37,1));sheetSet('wbRearMoment',f(rear*73,1));
+sheetSet('wbMainMoment',f(n('mainBag')*95,1));sheetSet('wbAftMoment',f(n('aftBag')*123,1));
+sheetSet('wbFuelMoment',f(fuel*6*47.9,1));sheetSet('wbTaxiWeight',f(-taxi*6,1));sheetSet('wbTaxiMoment',f(-taxi*6*47.9,1));
+sheetSet('wbTripWeight',f(-trip*6,1));sheetSet('wbTripMoment',f(-trip*6*47.9,1));
+sheetSet('fuelSubtotal',f(taxi+trip+n('reserve'),1));sheetSet('fuelExtra',f(fuel-taxi-trip-n('reserve'),1));sheetSet('fuelTotal',f(fuel,1));
+sheetSet('fuelEndurance','See fuel plan');
+const cg=(w,m)=>w>0?f(m/w,2):'—';
+const plotCGPoint=(pointId,labelId,weight,moment,label)=>{
+ const arm=weight>0?moment/weight:NaN;
+ const x=58+((arm-34)/12)*640;
+ const y=282-((weight-1500)/900)*270;
+ const point=$(pointId),txt=$(labelId);
+ if(!Number.isFinite(x)||!Number.isFinite(y)){point.setAttribute('display','none');txt.setAttribute('display','none');return;}
+ point.setAttribute('display','inline');txt.setAttribute('display','inline');
+ point.setAttribute('cx',x);point.setAttribute('cy',y);
+ txt.setAttribute('x',x+10);txt.setAttribute('y',y-9);txt.textContent=label;
+};
+plotCGPoint('cgTakePoint','cgTakeLabel',take,takeMoment,'TAKEOFF');
+plotCGPoint('cgLandPoint','cgLandLabel',land,landMoment,'LANDING');const remaining=fuel-taxi-trip;const totalPlanned=taxi+trip+n('reserve');const margin=p.max-take;
+$('mTake').textContent=f(take);$('mCG').textContent=cg(take,takeMoment);$('mFuel').textContent=f(remaining);$('mMargin').textContent=f(margin);
+$('mMargin').className=margin<0?'danger':'accent';$('mFuel').className=remaining<n('reserve')?'danger':'accent';
+$('weightRows').innerHTML=row('Basic empty weight',f(p.empty)+' lb')+row('Empty moment',f(p.moment,2)+' lb-in')+row('Zero-fuel weight / CG',f(dry)+' lb / '+cg(dry,dryMoment)+' in')+row('Ramp weight / CG',f(ramp)+' lb / '+cg(ramp,rampMoment)+' in')+row('Takeoff weight / CG',f(take)+' lb / '+cg(take,takeMoment)+' in')+row('Landing weight / CG',f(land)+' lb / '+cg(land,landMoment)+' in')+row('Maximum gross weight',f(p.max,0)+' lb')+row('Takeoff weight margin',f(margin)+' lb');
+const problems=[];if(margin<0||ramp>p.max||land>p.max)problems.push('Weight exceeds listed max gross at one or more phases.');if(n('mainBag')>120)problems.push('Main baggage exceeds the listed 120 lb station limit.');if(n('aftBag')>40)problems.push('Aft baggage exceeds the listed 40 lb station limit.');if(fuel>p.capacity)problems.push('Fuel exceeds the listed usable fuel capacity.');if([n('pilot'),n('copilot'),n('rear1'),n('rear2'),n('extras'),n('mainBag'),n('aftBag'),fuel].some(x=>x<0))problems.push('Negative loading value entered.');if(taxi>fuel||trip>fuel-taxi)problems.push('Fuel burn exceeds fuel loaded.');$('loadAlert').className='notice'+(problems.length?' alert':'');$('loadAlert').textContent=problems.length?problems.join(' '):'No listed gross-weight, baggage or fuel-capacity exceedance detected. CG envelope remains unverified.';
+$('fuelRows').innerHTML=row('Fuel loaded',f(fuel)+' gal')+row('Trip fuel (excluding taxi)',f(trip)+' gal')+row('Total planned incl. reserve',f(totalPlanned)+' gal')+row('Projected landing fuel',f(remaining)+' gal')+row('Fuel above entered reserve',f(remaining-n('reserve'))+' gal');$('fuelAlert').className='notice'+(remaining<n('reserve')?' alert':'');$('fuelAlert').textContent=remaining<n('reserve')?'Projected landing fuel is below your entered reserve.':'Projected landing fuel meets the entered reserve, based on manual estimates only.';
+const pa=n('elevation')+(29.92-n('altimeter'))*1000;const isa=15-1.98*pa/1000;const da=pa+120*(n('temp')-isa);const angle=(n('windDir')-n('runway'))*Math.PI/180;const cross=n('windSpeed')*Math.sin(angle),head=n('windSpeed')*Math.cos(angle);$('weatherRows').innerHTML=row('Pressure altitude',f(pa,0)+' ft')+row('Estimated density altitude',f(da,0)+' ft');$('windRows').innerHTML=row('Crosswind component',f(Math.abs(cross))+' kt '+(cross>=0?'from right':'from left'))+row(head>=0?'Headwind component':'Tailwind component',f(Math.abs(head))+' kt');
+const speeds=[['Vso','41'],['Vs1','47'],['Vr','55'],['Vx','59'],['Vy','73'],['Vglide','65'],['Vref','53'],['Va',f(95*Math.sqrt(Math.max(take,0)/p.max))],['Vno','128'],['Vne','160'],['Vfe 10°','110'],['Vfe 20°','85']];$('speedGrid').innerHTML=speeds.map(([k,v])=>`<div class="speed"><span>${k}</span><b>${v}</b><small>kt indicated</small></div>`).join('');}
+document.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',calculate));calculate();
+</script>
+<script>
+(()=>{
+const $id=id=>document.getElementById(id);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const setStatus=(msg,bad=false)=>{const e=$id('airportStatus');e.textContent=msg;e.style.color=bad?'#b3261e':'#52677f'};
+let runwayDbPromise=null, airportDbPromise=null;
+async function csvRows(url){
+ const r=await fetch(url);if(!r.ok)throw new Error('Could not load airport reference data ('+r.status+').');
+ const txt=await r.text();
+ const rows=[];let row=[],v='',q=false;
+ for(let i=0;i<txt.length;i++){const c=txt[i];if(c==='"'){if(q&&txt[i+1]==='"'){v+='"';i++;}else q=!q;}else if(c===','&&!q){row.push(v);v='';}else if((c==='\n'||c==='\r')&&!q){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(v);if(row.length>1)rows.push(row);row=[];v='';}else v+=c;}
+ if(v.length||row.length){row.push(v);rows.push(row);}
+ const headers=rows.shift().map(x=>x.trim());
+ return rows.map(r=>Object.fromEntries(headers.map((h,i)=>[h,r[i]??''])));
+}
+function loadRunways(){if(!runwayDbPromise)runwayDbPromise=csvRows('https://davidmegginson.github.io/ourairports-data/runways.csv');return runwayDbPromise;}
+function loadAirports(){if(!airportDbPromise)airportDbPromise=csvRows('https://davidmegginson.github.io/ourairports-data/airports.csv');return airportDbPromise;}
+function stat(label,value){return `<div class="airport-stat"><span>${esc(label)}</span><strong>${esc(value||'—')}</strong></div>`;}
+function windInfo(d){
+ if(!d)return null;
+ const w=d.decoded?.wind||{};
+ let dir=w.direction;
+ if(dir===null||dir===undefined||!Number.isFinite(Number(dir)))return null;
+ return {dir:Number(dir),speed:Number(w.speedKt??0),gust:w.gustKt==null?null:Number(w.gustKt)};
+}
+function component(wind,heading){
+ const a=(wind.dir-heading)*Math.PI/180;
+ return {head:wind.speed*Math.cos(a),cross:wind.speed*Math.sin(a)};
+}
+async function fetchAirport(){
+ const code=$id('airportIcao').value.trim().toUpperCase();
+ if(!/^[A-Z0-9]{4}$/.test(code)){setStatus('Enter a valid 4-character ICAO code.',true);return;}
+ $id('airportIcao').value=code;$id('airportFetchBtn').disabled=true;setStatus('Fetching METAR, TAF and runway data…');
+ $id('metarDecoded').innerHTML='Loading…';$id('tafMeta').textContent='Loading…';$id('runwayResults').textContent='Loading runway data…';
+ try{
+  const [mr,tr,airports,runways]=await Promise.all([
+   fetch('https://datamask.org/api/v1/metar/'+encodeURIComponent(code)).then(r=>{if(!r.ok)throw new Error('METAR unavailable (HTTP '+r.status+').');return r.json();}),
+   fetch('https://datamask.org/api/v1/taf/'+encodeURIComponent(code)).then(async r=>r.ok?r.json():null),
+   loadAirports(),loadRunways()
+  ]);
+  const airport=airports.find(a=>a.ident===code||a.gps_code===code);
+  const field=airport?`${airport.name||code}${airport.municipality?', '+airport.municipality:''}`:code;
+  const d=mr.decoded||{},w=windInfo(mr);
+  const clouds=(d.clouds||[]).map(c=>`${c.quantity||''} ${c.heightFt!=null?c.heightFt+' ft':''}`).join(', ')||'Not reported';
+  $id('metarDecoded').innerHTML=[
+   stat('Airport',field),stat('Flight category',d.flightCategory||'—'),
+   stat('Wind',w?`${String(w.dir).padStart(3,'0')}° at ${w.speed} kt${w.gust?`, gust ${w.gust}`:''}`:'Calm / variable / unavailable'),
+   stat('Visibility',d.visibility?.statuteMiles!=null?`${d.visibility.statuteMiles} SM`:'—'),
+   stat('Ceiling',d.ceilingFt!=null?`${d.ceilingFt} ft`:'No ceiling reported'),
+   stat('Cloud layers',clouds),stat('Temperature / Dewpoint',d.temperature?`${d.temperature.temp}° / ${d.temperature.dewpoint}°C`:'—'),
+   stat('Altimeter',d.qnh?.inhg!=null?`${Number(d.qnh.inhg).toFixed(2)} inHg`:'—'),
+   stat('Observation time',mr.observedAt||'—')
+  ].join('');
+  $id('metarRaw').textContent=mr.raw||'Raw METAR unavailable.';
+  $id('tafMeta').innerHTML=tr?`<div class="airport-stat"><span>TAF issued</span><strong>${esc(tr.issuedAt||'Not provided')}</strong></div><div class="airport-stat"><span>Forecast source</span><strong>NOAA/NWS feed</strong></div>`:'No TAF currently available for this station.';
+  $id('tafRaw').textContent=tr?.raw||'TAF unavailable.';
+  const ends=runways.filter(r=>r.airport_ident===(airport?.ident||code)&&r.closed!=='1'&&r.le_ident&&r.he_ident);
+  const runwayEnds=[];
+  ends.forEach(r=>{
+   const len=Number(r.length_ft)||0;
+   if(r.le_ident&&Number.isFinite(Number(r.le_heading_degT)))runwayEnds.push({id:r.le_ident,heading:Number(r.le_heading_degT),length:len,surface:r.surface||'—'});
+   if(r.he_ident&&Number.isFinite(Number(r.he_heading_degT)))runwayEnds.push({id:r.he_ident,heading:Number(r.he_heading_degT),length:len,surface:r.surface||'—'});
+  });
+  if(!runwayEnds.length){
+   $id('runwayResults').textContent='No runway records found for this ICAO identifier in the airport reference dataset.';
+  }else if(!w||w.speed===0){
+   $id('runwayResults').innerHTML='<p>Wind is calm, variable, or unavailable. Runways are listed below, but no wind-based runway recommendation is made.</p>'+runwayTable(runwayEnds,null);
+  }else{
+   const ranked=runwayEnds.map(r=>({...r,...component(w,r.heading)})).sort((a,b)=>b.head-a.head);
+   $id('runwayResults').innerHTML=`<p><strong>Wind-based suggestion: Runway ${esc(ranked[0].id)}</strong> — estimated headwind ${ranked[0].head.toFixed(1)} kt, crosswind ${Math.abs(ranked[0].cross).toFixed(1)} kt. Other operational factors may make another runway preferable.</p>`+runwayTable(ranked,ranked[0].id);
+  }
+  $id('windSource').textContent=w?`METAR wind ${String(w.dir).padStart(3,'0')}°/${w.speed} kt${w.gust?`G${w.gust}`:''}`:'No usable wind direction';
+  $id('airportLinks').innerHTML=`<a href="https://aviationweather.gov/data/metar/?id=${code}" target="_blank" rel="noopener">Official AviationWeather METAR</a><a href="https://aviationweather.gov/data/taf/?id=${code}" target="_blank" rel="noopener">Official AviationWeather TAF</a><a href="https://www.faa.gov/air_traffic/flight_info/aeronav/digital_products/dtpp/" target="_blank" rel="noopener">FAA charts / procedures</a><a href="https://notams.aim.faa.gov/notamSearch/" target="_blank" rel="noopener">FAA NOTAM Search</a>`;
+  setStatus(`Loaded ${code} · ${mr.observedAt||'latest report'}`);
+ }catch(e){setStatus(e.message||'Unable to retrieve airport data.',true);$id('metarDecoded').textContent='Weather lookup failed.';$id('metarRaw').textContent='';$id('tafMeta').textContent='Forecast unavailable.';$id('tafRaw').textContent='';$id('runwayResults').textContent='Runway comparison unavailable.';}
+ finally{$id('airportFetchBtn').disabled=false;}
+}
+function runwayTable(rows,recommended){
+ return `<table class="runway-table"><thead><tr><th>Runway</th><th>Heading °T</th><th>Length</th><th>Surface</th><th>Headwind / Tailwind</th><th>Crosswind</th><th>Status</th></tr></thead><tbody>${rows.map(r=>{const rec=r.id===recommended;return `<tr class="${rec?'recommended':r.head< -0.1?'tailwind':''}"><td>${esc(r.id)}</td><td>${r.heading.toFixed(0)}°</td><td>${r.length?Math.round(r.length).toLocaleString()+' ft':'—'}</td><td>${esc(r.surface)}</td><td>${r.head>=0?`${r.head.toFixed(1)} kt headwind`:`${Math.abs(r.head).toFixed(1)} kt tailwind`}</td><td>${Math.abs(r.cross).toFixed(1)} kt</td><td>${rec?'<span class="runway-badge">WIND SUGGESTION</span>':r.head< -0.1?'Tailwind component':'—'}</td></tr>`;}).join('')}</tbody></table>`;
+}
+$id('airportFetchBtn').addEventListener('click',fetchAirport);
+$id('airportIcao').addEventListener('keydown',e=>{if(e.key==='Enter')fetchAirport();});
+})();
+</script>
+</body></html>
